@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "hobio.api", "api\hobio.api.csproj", "{374EBAD8-269D-4554-B383-E41F40A2C00C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "hobio.shared", "shared\hobio.shared.csproj", "{1713E69F-D448-414A-9CF0-9DE0A1F118B0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "hobio.worker", "worker\hobio.worker.csproj", "{A826ED97-5C2A-45F4-8517-989409696397}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{374EBAD8-269D-4554-B383-E41F40A2C00C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{374EBAD8-269D-4554-B383-E41F40A2C00C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{374EBAD8-269D-4554-B383-E41F40A2C00C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{374EBAD8-269D-4554-B383-E41F40A2C00C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1713E69F-D448-414A-9CF0-9DE0A1F118B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1713E69F-D448-414A-9CF0-9DE0A1F118B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1713E69F-D448-414A-9CF0-9DE0A1F118B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1713E69F-D448-414A-9CF0-9DE0A1F118B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A826ED97-5C2A-45F4-8517-989409696397}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A826ED97-5C2A-45F4-8517-989409696397}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A826ED97-5C2A-45F4-8517-989409696397}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A826ED97-5C2A-45F4-8517-989409696397}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
