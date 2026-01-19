@@ -16,16 +16,17 @@ Future updates aim to support additional platforms beyond Steam and Last.fm.
 
 ## 🛠 Tech Stack
 
-*   **Framework**: .NET 10 (Preview/Latest)
+*   **Framework**: .NET 10
 *   **Language**: C#
 *   **Database/Cache**: Redis
-*   **Containerization**: Docker
+*   **Containerization**: Docker (using Alpine-based images for efficiency)
+*   **Orchestration**: Docker Compose
 *   **Cloud Provider**: Google Cloud Platform (GCP)
 
 ## 📂 Project Structure
 
 *   **`api/`**: The ASP.NET Core Web API project.
-*   **`worker/`**: The Worker Service project for background processing.
+*   **`worker/`**: The Worker Service project for background processing. Includes `ttf-dejavu` for PDF font support.
 *   **`shared/`**: Shared libraries and models used across services.
 
 ## 🚀 Getting Started
@@ -33,39 +34,53 @@ Future updates aim to support additional platforms beyond Steam and Last.fm.
 ### Prerequisites
 
 *   [.NET 10 SDK](https://dotnet.microsoft.com/download)
-*   [Docker](https://www.docker.com/products/docker-desktop)
-*   [Redis](https://redis.io/) (Local instance or via Docker)
+*   [Docker Desktop](https://www.docker.com/products/docker-desktop)
 
-### Running Locally
+### Running with Docker Compose (Recommended)
+
+The easiest way to run the entire stack (API, Worker, and Redis) is using Docker Compose:
+
+1.  **Start the stack**:
+    ```bash
+    docker-compose up --build
+    ```
+    This will:
+    *   Build the `api` and `worker` images using their respective Dockerfiles.
+    *   Start a `redis:8-alpine` container.
+    *   Set up a dedicated network (`hobio_network`).
+    *   Wait for Redis to be healthy before starting the services.
+
+2.  **Access the API**:
+    The API will be available at `http://localhost:8080`.
+
+### Running Manually
+
+If you prefer to run services individually:
 
 1.  **Start Redis**:
-    Ensure you have a Redis instance running locally (default port 6379).
     ```bash
-    docker run -d -p 6379:6379 redis
+    docker run -d -p 6379:6379 --name hobio_redis redis:8-alpine
     ```
 
-2.  **Run the API**:
-    Navigate to the `api` directory and start the service.
+2.  **Run the SDK projects**:
+    You will need to set the `REDIS_URL` environment variable if your Redis is not on `localhost:6379`.
     ```bash
+    # Terminal 1 (API)
     cd api
     dotnet run
-    ```
-    The API will be available at `http://localhost:5000` (or similar, check console output).
 
-3.  **Run the Worker**:
-    Open a new terminal, navigate to the `worker` directory and start the service.
-    ```bash
+    # Terminal 2 (Worker)
     cd worker
     dotnet run
     ```
 
 ## 🗺 Roadmap
 
+*   [x] Create Docker Compose setup for easy local orchestration.
 *   [ ] Implement Redis queue integration.
 *   [ ] Integrate Steam API.
 *   [ ] Integrate Last.fm API.
 *   [ ] Implement PDF generation logic.
-*   [ ] Create Docker Compose setup for easy local orchestration.
 *   [ ] Deploy to GCP (Google Cloud Run/GKE).
 *   [ ] Develop a Frontend UI (separate project).
 
