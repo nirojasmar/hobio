@@ -1,23 +1,23 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
+﻿FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS base
 USER $APP_UID
-WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
 
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
-ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["hobio.api/hobio.api.csproj", "hobio.api/"]
-RUN dotnet restore "hobio.api/hobio.api.csproj"
+ARG BUILD_CONFIGURATION=Release
+COPY ["api/hobio.api.csproj", "api/"]
+COPY ["shared/hobio.shared.csproj", "shared/"]
+RUN dotnet restore "api/hobio.api.csproj"
+
 COPY . .
-WORKDIR "/src/hobio.api"
-RUN dotnet build "./hobio.api.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src/api"
+RUN dotnet build "hobio.api.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./hobio.api.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "hobio.api.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
+EXPOSE 8080
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "hobio.api.dll"]
