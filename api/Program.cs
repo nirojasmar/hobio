@@ -11,8 +11,12 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+else
+{
+    app.UseHttpsRedirection();
+}
 
-app.UseHttpsRedirection();
+app.MapGet("/", () => "Hobio API is running! Try /weatherforecast or /openapi/v1.json");
 
 var summaries = new[]
 {

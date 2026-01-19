@@ -23,6 +23,7 @@ services:
       - "8080:8080"
     environment:
       - REDIS_URL=redis://redis:6379
+      - ASPNETCORE_ENVIRONMENT=Development
     depends_on:
       redis:
         condition: service_healthy
@@ -36,6 +37,7 @@ services:
     container_name: hobio_worker
     environment:
       - REDIS_URL=redis://redis:6379
+      - ASPNETCORE_ENVIRONMENT=Development
     deploy:
       resources:
         limits:
