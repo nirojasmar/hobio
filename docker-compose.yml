@@ -1,0 +1,55 @@
+services:
+  redis:
+    image: redis:8-alpine
+    container_name: hobio_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - hobio_network
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    volumes:
+      - redis_data:/data
+    
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    container_name: hobio_api
+    ports:
+      - "8080:8080"
+    environment:
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - hobio_network
+
+  worker:
+    build:
+      context: .
+      dockerfile: worker/Dockerfile
+    container_name: hobio_worker
+    environment:
+      - REDIS_URL=redis://redis:6379
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 1G
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - hobio_network
+
+networks:
+  hobio_network:
+    driver: bridge
+
+volumes:
+  redis_data:
