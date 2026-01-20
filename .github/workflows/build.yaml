@@ -15,8 +15,10 @@ jobs:
     with:
       project_key: "hobio"
       scanner_type: "dotnet"
-    secrets: inherit
-    
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      SONAR_ORG: ${{ secrets.SONAR_ORG }}
+
   build:
     runs-on: ubuntu-latest
     steps:
