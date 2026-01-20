@@ -10,15 +10,14 @@ on:
   workflow_dispatch:
 
 jobs:
+  sonar-scan:
+    uses: nirojasmar/base-workflows/.github/workflows/sonar-scan.yml@main
+    with:
+      project_key: "hobio"
+      scanner_type: "dotnet"
+    
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: SonarQube Scan
-        uses: nirojasmar/base-workflows/.github/workflows/sonar-scan.yml@main
-        with:
-          project_key: "hobio"
-          scanner_type: "dotnet"
-
-      - name: Build
+      - name: Build...
         run: echo "Building images..."
