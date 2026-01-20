@@ -15,6 +15,7 @@ jobs:
     with:
       project_key: "hobio"
       scanner_type: "dotnet"
+    secrets: inherit
     
   build:
     runs-on: ubuntu-latest
