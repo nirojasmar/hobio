@@ -1,8 +1,22 @@
+using hobio.shared.Models;
+using MassTransit;
+using Microsoft.AspNetCore.Mvc;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.AddMassTransit(config =>
+{
+    config.UsingRabbitMq((context, cfg) =>
+    {
+        var rabbitHost = builder.Configuration.GetConnectionString("RabbitMQ") ??  "localhost";
+        cfg.Host(rabbitHost, "/");
+        cfg.ConfigureEndpoints(context);
+    });
+});
 
 var app = builder.Build();
 
@@ -16,30 +30,30 @@ else
     app.UseHttpsRedirection();
 }
 
-app.MapGet("/", () => "Hobio API is running! Try /weatherforecast or /openapi/v1.json");
-
-var summaries = new[]
+app.MapPost("/api/report", async (
+    [FromBody] ReportRequest request,
+    IPublishEndpoint publishEndpoint, 
+    ILogger<Program> logger) =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
+    var jobId = Guid.NewGuid();
+    
+    var job = new ReportJob
     {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast");
+        JobId = jobId,
+        UserId = "user-123",
+        Year = request.Year,
+        Sources = request.Sources,
+        CreatedAt = DateTime.UtcNow,
+        UpdatedAt = DateTime.UtcNow
+    };
+    
+    await publishEndpoint.Publish(job);
+    
+    logger.LogInformation("Queued Job: {JobId}", jobId);
+
+    return Results.Accepted($"/api/report/status/{jobId}", new { JobId = jobId });
+});
 
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+public record ReportRequest(int Year, List<string> Sources);
