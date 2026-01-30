@@ -1,0 +1,18 @@
+name: Sonar Scan
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  scan:
+    uses: nirojasmar/base-workflows/.github/workflows/sonar-scan.yml@main
+    with:
+      project_key: "hobio"
+      scanner_type: "dotnet"
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      SONAR_ORG: ${{ secrets.SONAR_ORG }}
+ 
