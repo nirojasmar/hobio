@@ -18,6 +18,11 @@ on:
           - dev
           - prod
 
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
 jobs:
   build-api:
     uses: nirojasmar/base-workflows/.github/workflows/docker-test-build.yml@infra-workflows
