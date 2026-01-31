@@ -23,12 +23,15 @@ permissions:
   packages: write
   id-token: write
 
+env:
+  ENVIRONMENT: ${{ github.event.inputs.environment || 'dev'}}
+  
 jobs:
   build-api:
     uses: nirojasmar/base-workflows/.github/workflows/docker-test-build.yml@infra-workflows
     with:
-      image_name: hobio-${{ github.event.inputs.environment == 'prod' && 'prod' || 'nonprod' }}/hobio-${{ github.event.inputs.environment == 'prod' && 'prod' || 'nonprod' }}-repo-ue1/hobio-api
-      environment: ${{ github.event.inputs.environment }} 
+      image_name: hobio-${{ env.ENVIRONMENT == 'prod' && 'prod' || 'nonprod' }}/hobio-${{ env.ENVIRONMENT == 'prod' && 'prod' || 'nonprod' }}-repo-ue1/hobio-api
+      environment: ${{ env.ENVIRONMENT }} 
       registry_host: us-east1-docker.pkg.dev
       dockerfile_path: api/Dockerfile
     secrets: inherit
@@ -36,8 +39,8 @@ jobs:
   build-worker:
     uses: nirojasmar/base-workflows/.github/workflows/docker-test-build.yml@infra-workflows
     with:
-      image_name: hobio-${{ github.event.inputs.environment == 'prod' && 'prod' || 'nonprod' }}/hobio-${{ github.event.inputs.environment == 'prod' && 'prod' || 'nonprod' }}-repo-ue1/hobio-worker
-      environment: ${{ github.event.inputs.environment }}
+      image_name: hobio-${{ env.ENVIRONMENT == 'prod' && 'prod' || 'nonprod' }}/hobio-${{ env.ENVIRONMENT == 'prod' && 'prod' || 'nonprod' }}-repo-ue1/hobio-worker
+      environment: ${{ env.ENVIRONMENT }}
       registry_host: us-east1-docker.pkg.dev
       dockerfile_path: worker/Dockerfile
     secrets: inherit
