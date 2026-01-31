@@ -22,13 +22,17 @@ jobs:
   build-api:
     uses: nirojasmar/base-workflows/.github/workflows/docker-test-build.yml@infra-workflows
     with:
-      image_name: hobio-nonprod/hobio-nonprod-repo-ue1/hobio-api
+      image_name: hobio-${{ github.event.inputs.environment == 'prod' && 'prod' || 'nonprod' }}/hobio-${{ github.event.inputs.environment == 'prod' && 'prod' || 'nonprod' }}-repo-ue1/hobio-api
       environment: ${{ github.event.inputs.environment }} 
+      registry_host: us-east1-docker.pkg.dev
+      dockerfile_path: api/Dockerfile
+    secrets: inherit
 
-  build-web:
+  build-worker:
     uses: nirojasmar/base-workflows/.github/workflows/docker-test-build.yml@infra-workflows
     with:
-      image_name: hobio-nonprod/hobio-nonprod-repo-ue1/hobio-web
+      image_name: hobio-${{ github.event.inputs.environment == 'prod' && 'prod' || 'nonprod' }}/hobio-${{ github.event.inputs.environment == 'prod' && 'prod' || 'nonprod' }}-repo-ue1/hobio-worker
       environment: ${{ github.event.inputs.environment }}
-      
-    
+      registry_host: us-east1-docker.pkg.dev
+      dockerfile_path: worker/Dockerfile
+    secrets: inherit
