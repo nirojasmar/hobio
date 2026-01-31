@@ -1,3 +1,4 @@
+using hobio.api.Models;
 using hobio.shared.Models;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
@@ -54,6 +55,4 @@ app.MapPost("/api/report", async (
     return Results.Accepted($"/api/report/status/{jobId}", new { JobId = jobId });
 });
 
-app.Run();
-
-public record ReportRequest(int Year, List<string> Sources);
+await app.RunAsync();

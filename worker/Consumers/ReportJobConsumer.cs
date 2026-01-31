@@ -28,7 +28,7 @@ public class ReportJobConsumer : IConsumer<ReportJob>
         catch (Exception e)
         {
             _logger.LogError(e, "Error Generating Report");
-            throw;
+            throw new ApplicationException("Failed to generate report", e);
         }
     }
 }
