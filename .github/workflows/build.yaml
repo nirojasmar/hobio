@@ -24,8 +24,8 @@ permissions:
   id-token: write
 
 jobs:
-  build-api:
-    uses: nirojasmar/base-workflows/.github/workflows/docker-test-build.yml@infra-workflows
+  build-api:  
+    uses: nirojasmar/base-workflows/.github/workflows/docker-test-build.yml@v0.3.1
     with:
       image_name: hobio-${{ github.event.inputs.environment == 'prod' && 'prod' || 'nonprod' }}/hobio-${{ github.event.inputs.environment == 'prod' && 'prod' || 'nonprod' }}-repo-ue1/hobio-api
       environment: ${{ github.event.inputs.environment || 'dev'}} 
@@ -34,7 +34,7 @@ jobs:
     secrets: inherit
 
   build-worker:
-    uses: nirojasmar/base-workflows/.github/workflows/docker-test-build.yml@infra-workflows
+    uses: nirojasmar/base-workflows/.github/workflows/docker-test-build.yml@v0.3.1
     with:
       image_name: hobio-${{ github.event.inputs.environment == 'prod' && 'prod' || 'nonprod' }}/hobio-${{ github.event.inputs.environment == 'prod' && 'prod' || 'nonprod' }}-repo-ue1/hobio-worker
       environment: ${{ github.event.inputs.environment || 'dev'}} 
