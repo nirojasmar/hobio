@@ -29,8 +29,17 @@ jobs:
     with:
       image_name: hobio-${{ github.event.inputs.environment == 'prod' && 'prod' || 'nonprod' }}/hobio-${{ github.event.inputs.environment == 'prod' && 'prod' || 'nonprod' }}-repo-ue1/hobio-api
       environment: ${{ github.event.inputs.environment || 'dev'}} 
-      registry_host: us-east1-docker.pkg.dev
       dockerfile_path: api/Dockerfile
+    secrets: inherit
+
+  deploy-api:
+    if: github.event_name != 'pull_request'
+    needs: build-api
+    uses: nirojasmar/base-workflows/.github/workflows/cloud-run-deploy.yml@feature/cloud-run-deploy
+    with:
+      image_name: ${{ needs.build-api.outputs.image_name }}
+      environment: ${{ github.event.inputs.environment || 'dev'}} 
+      service: hobio-api-${{ github.event.inputs.environment == 'prod' && 'prod' || 'nonprod' }}
     secrets: inherit
 
   build-worker:
@@ -38,6 +47,15 @@ jobs:
     with:
       image_name: hobio-${{ github.event.inputs.environment == 'prod' && 'prod' || 'nonprod' }}/hobio-${{ github.event.inputs.environment == 'prod' && 'prod' || 'nonprod' }}-repo-ue1/hobio-worker
       environment: ${{ github.event.inputs.environment || 'dev'}} 
-      registry_host: us-east1-docker.pkg.dev
       dockerfile_path: worker/Dockerfile
+    secrets: inherit
+
+  deploy-worker:
+    if: github.event_name != 'pull_request'
+    needs: build-worker
+    uses: nirojasmar/base-workflows/.github/workflows/cloud-run-deploy.yml@feature/cloud-run-deploy
+    with:
+      image_name: ${{ needs.build-worker.outputs.image_name }}
+      environment: ${{ github.event.inputs.environment || 'dev'}} 
+      service: hobio-worker-${{ github.event.inputs.environment == 'prod' && 'prod' || 'nonprod' }}
     secrets: inherit
