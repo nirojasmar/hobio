@@ -41,6 +41,7 @@ public class Program
             app.MapOpenApi();
         }
         
+        app.MapGet("/", () => Results.Ok("Healthy"));
         app.MapPost("/api/report", ReportHandler.HandleReportRequest);
         
         await app.RunAsync();
