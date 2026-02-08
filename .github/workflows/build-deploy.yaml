@@ -54,7 +54,7 @@ jobs:
 
   build-api:
     needs: configure
-    uses: nirojasmar/base-workflows/.github/workflows/docker-test-build.yml@v0.4.0
+    uses: nirojasmar/base-workflows/.github/workflows/docker-test-build.yml@feature/cloud-run-deploy
     with:
       image_name: hobio-${{ needs.configure.outputs.registry_env }}/hobio-${{ needs.configure.outputs.registry_env }}-repo-ue1/hobio-api
       environment: ${{ needs.configure.outputs.environment }}
@@ -75,7 +75,7 @@ jobs:
 
   build-worker:
     needs: configure
-    uses: nirojasmar/base-workflows/.github/workflows/docker-test-build.yml@v0.4.0
+    uses: nirojasmar/base-workflows/.github/workflows/docker-test-build.yml@feature/cloud-run-deploy
     with:
       image_name: hobio-${{ needs.configure.outputs.registry_env }}/hobio-${{ needs.configure.outputs.registry_env }}-repo-ue1/hobio-worker
       environment: ${{ needs.configure.outputs.environment }}
