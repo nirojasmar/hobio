@@ -17,6 +17,11 @@ on:
         options:
           - dev
           - prod
+      region:
+        description: 'Region to build for'
+        required: false
+        default: 'us-east1'
+        type: string
 
 permissions:
   contents: read
@@ -71,6 +76,7 @@ jobs:
       service: hobio-api-${{ needs.configure.outputs.registry_env }}
       vpc_connector: ${{ needs.configure.outputs.vpc_connector }}
       secrets: ConnectionStrings__RabbitMQ=${{ needs.configure.outputs.secret_name }}:latest
+      region: ${{ github.event.inputs.region || 'us-east1' }}
     secrets: inherit
 
   build-worker:
@@ -92,4 +98,5 @@ jobs:
       service: hobio-worker-${{ needs.configure.outputs.registry_env }}
       vpc_connector: ${{ needs.configure.outputs.vpc_connector }}
       secrets: ConnectionStrings__RabbitMQ=${{ needs.configure.outputs.secret_name }}:latest
+      region: ${{ github.event.inputs.region || 'us-east1' }}
     secrets: inherit
