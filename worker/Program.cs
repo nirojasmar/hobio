@@ -1,9 +1,7 @@
 using hobio.worker.Consumers;
 using MassTransit;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = Host.CreateApplicationBuilder(args);
 
 builder.Services.AddMassTransit(config =>
 {
@@ -24,6 +22,5 @@ builder.Services.AddMassTransit(config =>
     });
 });
 
-var app = builder.Build();
-app.MapGet("/", () => "Worker is running!");
-await app.RunAsync();
+var host = builder.Build();
+await host.RunAsync();
