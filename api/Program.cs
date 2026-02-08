@@ -40,10 +40,6 @@ public class Program
         {
             app.MapOpenApi();
         }
-        else
-        {
-            app.UseHttpsRedirection();
-        }
         
         app.MapPost("/api/report", ReportHandler.HandleReportRequest);
         
