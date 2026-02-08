@@ -9,8 +9,15 @@ builder.Services.AddMassTransit(config =>
 
     config.UsingRabbitMq((context, cfg) =>
     {
-        var rabbitHost = builder.Configuration.GetConnectionString("RabbitMQ") ??  "localhost";
-        cfg.Host(rabbitHost, "/");
+        var rabbitUri = builder.Configuration.GetConnectionString("RabbitMQ");
+        if (!string.IsNullOrEmpty(rabbitUri))
+        {
+            cfg.Host(new Uri(rabbitUri));
+        }
+        else
+        {
+            cfg.Host("localhost", "/");
+        }
         cfg.ConfigureEndpoints(context);
     });
 });
