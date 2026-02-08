@@ -1,18 +1,17 @@
 services:
-  redis:
-    image: redis:8-alpine
-    container_name: hobio_redis
+  rabbitmq:
+    image: rabbitmq:4-management-alpine
+    container_name: hobio_rabbitmq
     ports:
-      - "6379:6379"
+      - "5672:5672"
+      - "15672:15672"
     networks:
       - hobio_network
     healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
-      interval: 5s
-      timeout: 3s
+      test: [ "CMD", "rabbitmq-diagnostics", "check_running" ]
+      interval: 10s
+      timeout: 5s
       retries: 5
-    volumes:
-      - redis_data:/data
     
   api:
     build:
@@ -22,10 +21,10 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - REDIS_URL=redis://redis:6379
+      - ConnectionStrings__RabbitMq=rabbitmq
       - ASPNETCORE_ENVIRONMENT=Development
     depends_on:
-      redis:
+      rabbitmq:
         condition: service_healthy
     networks:
       - hobio_network
@@ -36,7 +35,7 @@ services:
       dockerfile: worker/Dockerfile
     container_name: hobio_worker
     environment:
-      - REDIS_URL=redis://redis:6379
+      - ConnectionStrings__RabbitMq=rabbitmq
       - ASPNETCORE_ENVIRONMENT=Development
     deploy:
       resources:
@@ -44,7 +43,7 @@ services:
           cpus: '0.50'
           memory: 1G
     depends_on:
-      redis:
+      rabbitmq:
         condition: service_healthy
     networks:
       - hobio_network
@@ -52,6 +51,3 @@ services:
 networks:
   hobio_network:
     driver: bridge
-
-volumes:
-  redis_data:

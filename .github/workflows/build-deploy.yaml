@@ -1,0 +1,95 @@
+name: Build and Deploy (Cloud Run)
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to build for'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - prod
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
+env:
+  VPC_CONNECTOR_DEV: projects/hobio-nonprod/locations/us-east1/connectors/hobio-nonprod-vpc-ue1
+  VPC_CONNECTOR_PROD: projects/hobio-prod/locations/us-east1/connectors/hobio-prod-vpc-ue1
+  SECRET_NAME_DEV: rabbitmq-connection-string-dev
+  SECRET_NAME_PROD: rabbitmq-connection-string-prod
+
+jobs:
+  configure:
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.vars.outputs.environment }}
+      registry_env: ${{ steps.vars.outputs.registry_env }}
+      vpc_connector: ${{ steps.vars.outputs.vpc_connector }}
+      secret_name: ${{ steps.vars.outputs.secret_name }}
+    steps:
+      - id: vars
+        run: |
+          ENV="${{ github.event.inputs.environment || 'dev' }}"
+          echo "environment=$ENV" >> "$GITHUB_OUTPUT"
+          if [[ "$ENV" == "prod" ]]; then
+            echo "registry_env=prod" >> "$GITHUB_OUTPUT"
+            echo "vpc_connector=${{ env.VPC_CONNECTOR_PROD }}" >> "$GITHUB_OUTPUT"
+            echo "secret_name=${{ env.SECRET_NAME_PROD }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "registry_env=nonprod" >> "$GITHUB_OUTPUT"
+            echo "vpc_connector=${{ env.VPC_CONNECTOR_DEV }}" >> "$GITHUB_OUTPUT"
+            echo "secret_name=${{ env.SECRET_NAME_DEV }}" >> "$GITHUB_OUTPUT"
+          fi
+
+  build-api:
+    needs: configure
+    uses: nirojasmar/base-workflows/.github/workflows/docker-test-build.yml@v0.4.0
+    with:
+      image_name: hobio-${{ needs.configure.outputs.registry_env }}/hobio-${{ needs.configure.outputs.registry_env }}-repo-ue1/hobio-api
+      environment: ${{ needs.configure.outputs.environment }}
+      dockerfile_path: api/Dockerfile
+    secrets: inherit
+
+  deploy-api:
+    if: github.event_name != 'pull_request'
+    needs: [build-api, configure]
+    uses: nirojasmar/base-workflows/.github/workflows/cloud-run-deploy.yml@feature/cloud-run-deploy
+    with:
+      image_name: ${{ needs.build-api.outputs.image_name }}
+      environment: ${{ needs.configure.outputs.environment }}
+      service: hobio-api-${{ needs.configure.outputs.registry_env }}
+      vpc_connector: ${{ needs.configure.outputs.vpc_connector }}
+      secrets: ConnectionStrings__RabbitMQ=${{ needs.configure.outputs.secret_name }}:latest
+    secrets: inherit
+
+  build-worker:
+    needs: configure
+    uses: nirojasmar/base-workflows/.github/workflows/docker-test-build.yml@v0.4.0
+    with:
+      image_name: hobio-${{ needs.configure.outputs.registry_env }}/hobio-${{ needs.configure.outputs.registry_env }}-repo-ue1/hobio-worker
+      environment: ${{ needs.configure.outputs.environment }}
+      dockerfile_path: worker/Dockerfile
+    secrets: inherit
+
+  deploy-worker:
+    if: github.event_name != 'pull_request'
+    needs: [build-worker, configure]
+    uses: nirojasmar/base-workflows/.github/workflows/cloud-run-deploy.yml@feature/cloud-run-deploy
+    with:
+      image_name: ${{ needs.build-worker.outputs.image_name }}
+      environment: ${{ needs.configure.outputs.environment }}
+      service: hobio-worker-${{ needs.configure.outputs.registry_env }}
+      vpc_connector: ${{ needs.configure.outputs.vpc_connector }}
+      secrets: ConnectionStrings__RabbitMQ=${{ needs.configure.outputs.secret_name }}:latest
+    secrets: inherit

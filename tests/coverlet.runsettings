@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat Code Coverage">
+        <Configuration>
+          <Format>cobertura</Format>
+          <Exclude>
+            [hobio.api]Microsoft.AspNetCore.OpenApi.Generated.*,
+            [hobio.api]System.Runtime.CompilerServices.*,
+            [hobio.api]Program,
+            [hobio.worker]Program
+          </Exclude>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>

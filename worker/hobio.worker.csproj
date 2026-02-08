@@ -9,7 +9,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="MassTransit.Redis" Version="9.0.0" />
+        <PackageReference Include="MassTransit" Version="8.5.7" />
+        <PackageReference Include="MassTransit.RabbitMQ" Version="8.5.7" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.2"/>
     </ItemGroup>
 
@@ -18,4 +19,15 @@
         <Link>.dockerignore</Link>
       </Content>
     </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\shared\hobio.shared.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Program.cs">
+        <ExcludeFromCodeCoverage />
+      </Compile>
+    </ItemGroup>
+
 </Project>

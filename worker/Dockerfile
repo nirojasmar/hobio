@@ -1,6 +1,8 @@
 ﻿FROM mcr.microsoft.com/dotnet/runtime:10.0-alpine AS base
 WORKDIR /app
-RUN apk add --no-cache ttf-dejavu fontconfig icu-libs
+RUN apk update && \
+    apk upgrade --no-cache libexpat && \
+    apk add --no-cache ttf-dejavu fontconfig icu-libs
 
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
