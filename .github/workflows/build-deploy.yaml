@@ -59,7 +59,7 @@ jobs:
 
   build-api:
     needs: configure
-    uses: nirojasmar/base-workflows/.github/workflows/docker-test-build.yml@feature/cloud-run-deploy
+    uses: nirojasmar/base-workflows/.github/workflows/docker-test-build.yml@v1
     with:
       image_name: hobio-${{ needs.configure.outputs.registry_env }}/hobio-${{ needs.configure.outputs.registry_env }}-repo-ue1/hobio-api
       environment: ${{ needs.configure.outputs.environment }}
@@ -69,7 +69,7 @@ jobs:
   deploy-api:
     if: github.event_name != 'pull_request'
     needs: [build-api, configure]
-    uses: nirojasmar/base-workflows/.github/workflows/cloud-run-deploy.yml@feature/cloud-run-deploy
+    uses: nirojasmar/base-workflows/.github/workflows/cloud-run-deploy.yml@v1
     with:
       image_name: ${{ needs.build-api.outputs.image_name }}
       environment: ${{ needs.configure.outputs.environment }}
@@ -81,7 +81,7 @@ jobs:
 
   build-worker:
     needs: configure
-    uses: nirojasmar/base-workflows/.github/workflows/docker-test-build.yml@feature/cloud-run-deploy
+    uses: nirojasmar/base-workflows/.github/workflows/docker-test-build.yml@v1
     with:
       image_name: hobio-${{ needs.configure.outputs.registry_env }}/hobio-${{ needs.configure.outputs.registry_env }}-repo-ue1/hobio-worker
       environment: ${{ needs.configure.outputs.environment }}
@@ -91,7 +91,7 @@ jobs:
   deploy-worker:
     if: github.event_name != 'pull_request'
     needs: [build-worker, configure]
-    uses: nirojasmar/base-workflows/.github/workflows/cloud-run-deploy.yml@feature/cloud-run-deploy
+    uses: nirojasmar/base-workflows/.github/workflows/cloud-run-deploy.yml@v1
     with:
       image_name: ${{ needs.build-worker.outputs.image_name }}
       environment: ${{ needs.configure.outputs.environment }}
