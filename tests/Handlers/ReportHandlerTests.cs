@@ -16,7 +16,7 @@ public class ReportHandlerTests
     {
         // Arrange
         var publishEndpoint = Substitute.For<IPublishEndpoint>();
-        var logger = Substitute.For<ILogger<Program>>();
+        var logger = Substitute.For<ILogger<hobio.api.Program>>();
         var request = new ReportRequest(2023, new List<string> { "Steam", "LastFm" });
 
         // Act
