@@ -8,8 +8,9 @@
           <Exclude>
             [hobio.api]Microsoft.AspNetCore.OpenApi.Generated.*,
             [hobio.api]System.Runtime.CompilerServices.*,
-            [hobio.api]Program,
-            [hobio.worker]Program
+            [hobio.api]hobio.api.Program,
+            [hobio.worker]hobio.worker.Program,
+            [hobio.worker]hobio.worker.Services.FileService
           </Exclude>
         </Configuration>
       </DataCollector>

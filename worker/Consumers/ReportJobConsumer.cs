@@ -2,6 +2,7 @@
 using hobio.worker.PdfLayouts;
 using MassTransit;
 using Microsoft.Extensions.Logging;
+using hobio.worker.Services;
 using QuestPDF.Fluent;
 
 namespace hobio.worker.Consumers;
@@ -9,10 +10,12 @@ namespace hobio.worker.Consumers;
 public class ReportJobConsumer : IConsumer<ReportJob>
 {
     private readonly ILogger<ReportJobConsumer> _logger;
+    private readonly IFileService _fileService;
     
-    public ReportJobConsumer(ILogger<ReportJobConsumer> logger)
+    public ReportJobConsumer(ILogger<ReportJobConsumer> logger, IFileService fileService)
     {
         _logger = logger;
+        _fileService = fileService;
     }
 
     public async Task Consume(ConsumeContext<ReportJob> context)
@@ -28,9 +31,10 @@ public class ReportJobConsumer : IConsumer<ReportJob>
             byte[] pdfBytes = document.GeneratePdf();
             
             var fileName = $"report-{job.Year}.pdf";
-            await File.WriteAllBytesAsync($"/tmp/{fileName}", pdfBytes);
+            var filePath = Path.Combine("/tmp", fileName);
+            await _fileService.WriteAllBytesAsync(filePath, pdfBytes);
             
-            _logger.LogInformation("Report Generated Successfully at: /tmp/{fileName}", fileName);
+            _logger.LogInformation("Report Generated Successfully at: {FilePath}", filePath);
         }
         catch (Exception e)
         {

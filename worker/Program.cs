@@ -1,6 +1,7 @@
 namespace hobio.worker;
 
 using hobio.worker.Consumers;
+using hobio.worker.Services;
 using MassTransit;
 using QuestPDF.Infrastructure;
 using Microsoft.AspNetCore.Builder;
@@ -13,6 +14,8 @@ public class Program
         QuestPDF.Settings.License = LicenseType.Community;
         var builder = WebApplication.CreateBuilder(args);
 
+        builder.Services.AddTransient<IFileService, FileService>();
+        
         builder.Services.AddMassTransit(config =>
         {
             config.AddConsumer<ReportJobConsumer>();
