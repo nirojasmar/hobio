@@ -18,7 +18,7 @@ Future updates aim to support additional platforms beyond Steam and Last.fm.
 
 *   **Framework**: .NET 10
 *   **Language**: C#
-*   **Database/Cache**: Redis
+*   **Database/Cache**: RabbitMQ
 *   **Containerization**: Docker (using Alpine-based images for efficiency)
 *   **Orchestration**: Docker Compose
 *   **Cloud Provider**: Google Cloud Platform (GCP)
@@ -46,9 +46,9 @@ The easiest way to run the entire stack (API, Worker, and Redis) is using Docker
     ```
     This will:
     *   Build the `api` and `worker` images using their respective Dockerfiles.
-    *   Start a `redis:8-alpine` container.
+    *   Start a `rabbitmq:3-alpine` container.
     *   Set up a dedicated network (`hobio_network`).
-    *   Wait for Redis to be healthy before starting the services.
+    *   Wait for RabbitMQ to be healthy before starting the services.
 
 2.  **Access the API**:
     The API will be available at `http://localhost:8080`.
@@ -57,13 +57,13 @@ The easiest way to run the entire stack (API, Worker, and Redis) is using Docker
 
 If you prefer to run services individually:
 
-1.  **Start Redis**:
+1.  **Start RabbitMQ**:
     ```bash
-    docker run -d -p 6379:6379 --name hobio_redis redis:8-alpine
+    docker run -d -p 5672:5672 --name hobio_rabbitmq rabbitmq:3-alpine
     ```
 
 2.  **Run the SDK projects**:
-    You will need to set the `REDIS_URL` environment variable if your Redis is not on `localhost:6379`.
+    You will need to set the `RABBITMQ_URL` environment variable if your RabbitMQ is not on `localhost:5672`.
     ```bash
     # Terminal 1 (API)
     cd api
@@ -77,10 +77,10 @@ If you prefer to run services individually:
 ## 🗺 Roadmap
 
 *   [x] Create Docker Compose setup for easy local orchestration.
-*   [ ] Implement Redis queue integration.
+*   [x] Implement RabbitMQ queue integration.
 *   [ ] Integrate Steam API.
 *   [ ] Integrate Last.fm API.
-*   [ ] Implement PDF generation logic.
+*   [x] Implement PDF generation logic.
 *   [ ] Deploy to GCP (Google Cloud Run/GKE).
 *   [ ] Develop a Frontend UI (separate project).
 
