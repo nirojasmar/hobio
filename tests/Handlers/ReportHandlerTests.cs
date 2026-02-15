@@ -1,5 +1,4 @@
 using hobio.api.Handlers;
-using hobio.api.Models;
 using hobio.shared.Models;
 using MassTransit;
 using Microsoft.AspNetCore.Http;

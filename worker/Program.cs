@@ -2,6 +2,7 @@ namespace hobio.worker;
 
 using hobio.worker.Consumers;
 using MassTransit;
+using QuestPDF.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 
@@ -9,6 +10,7 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
+        QuestPDF.Settings.License = LicenseType.Community;
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Services.AddMassTransit(config =>

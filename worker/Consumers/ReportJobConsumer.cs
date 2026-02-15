@@ -1,7 +1,8 @@
 ﻿using hobio.shared.Models;
-using hobio.shared.Enums;
+using hobio.worker.PdfLayouts;
 using MassTransit;
 using Microsoft.Extensions.Logging;
+using QuestPDF.Fluent;
 
 namespace hobio.worker.Consumers;
 
@@ -18,12 +19,18 @@ public class ReportJobConsumer : IConsumer<ReportJob>
     {
         var job = context.Message;
         _logger.LogInformation("Received Job: {JobId} for  User: {UserId}", job.JobId, job.UserId);
+        
+        var document = new ReportDocument(context.Message);
 
         try
         {
             _logger.LogInformation("Generating report for year {Year}", job.Year);
-            await Task.Delay(2000);
-            _logger.LogInformation("Report Generated Successfully");
+            byte[] pdfBytes = document.GeneratePdf();
+            
+            var fileName = $"report-{job.Year}.pdf";
+            await File.WriteAllBytesAsync($"/tmp/{fileName}", pdfBytes);
+            
+            _logger.LogInformation("Report Generated Successfully at: /tmp/{fileName}", fileName);
         }
         catch (Exception e)
         {
