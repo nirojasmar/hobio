@@ -1,4 +1,5 @@
 ﻿using Google.Cloud.Storage.V1;
+using Microsoft.Extensions.Configuration;
 
 namespace hobio.worker.Services;
 
@@ -9,19 +10,39 @@ public interface IStorageService
 
 public class GcsService : IStorageService
 {
-    private readonly StorageClient _storageClient;
     private readonly string _bucketName;
+    private StorageClient? _storageClient;
+    private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
     public GcsService(IConfiguration configuration)
     {
-        _storageClient = StorageClient.Create();
-        
         _bucketName = configuration["REPORTS_BUCKET_NAME"] ?? throw new ArgumentNullException("REPORTS_BUCKET_NAME not set");
+    }
+
+    private async Task<StorageClient> GetClientAsync()
+    {
+        if (_storageClient != null)
+            return _storageClient;
+
+        await _semaphore.WaitAsync();
+        try
+        {
+            if (_storageClient == null)
+            {
+                _storageClient = await StorageClient.CreateAsync();
+            }
+            return _storageClient;
+        }
+        finally
+        {
+            _semaphore.Release();
+        }
     }
 
     public async Task UploadFileAsync(byte[] content, string fileName, string contentType)
     {
+        var client = await GetClientAsync();
         using var stream = new MemoryStream(content);
-        await _storageClient.UploadObjectAsync(_bucketName, fileName, contentType, stream);
+        await client.UploadObjectAsync(_bucketName, fileName, contentType, stream);
     }
 }
