@@ -22,8 +22,8 @@ public class ReportJobConsumerTests
     {
         // Arrange
         var logger = Substitute.For<ILogger<ReportJobConsumer>>();
-        var fileService = Substitute.For<IFileService>();
-        var consumer = new ReportJobConsumer(logger, fileService);
+        var storageService = Substitute.For<IStorageService>();
+        var consumer = new ReportJobConsumer(logger, storageService);
         var context = Substitute.For<ConsumeContext<ReportJob>>();
         
         var job = new ReportJob { JobId = Guid.NewGuid(), UserId = "user-123", Year = 2023, Sources = new List<string> { "Test Source" } };
@@ -33,8 +33,8 @@ public class ReportJobConsumerTests
         await consumer.Consume(context);
 
         // Assert
-        // Verify file service was called
-        await fileService.Received(1).WriteAllBytesAsync(Arg.Any<string>(), Arg.Any<byte[]>());
+        // Verify storage service was called
+        await storageService.Received(1).UploadFileAsync(Arg.Any<byte[]>(), Arg.Any<string>(), "application/pdf");
     }
 
     [Fact]
@@ -42,8 +42,8 @@ public class ReportJobConsumerTests
     {
         // Arrange
         var logger = Substitute.For<ILogger<ReportJobConsumer>>();
-        var fileService = Substitute.For<IFileService>();
-        var consumer = new ReportJobConsumer(logger, fileService);
+        var storageService = Substitute.For<IStorageService>();
+        var consumer = new ReportJobConsumer(logger, storageService);
         var context = Substitute.For<ConsumeContext<ReportJob>>();
         
         var job = new ReportJob { JobId = Guid.NewGuid(), UserId = "user-failure" };

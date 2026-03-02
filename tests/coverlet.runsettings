@@ -10,7 +10,7 @@
             [hobio.api]System.Runtime.CompilerServices.*,
             [hobio.api]hobio.api.Program,
             [hobio.worker]hobio.worker.Program,
-            [hobio.worker]hobio.worker.Services.FileService
+            [hobio.worker]hobio.worker.Services.GcsService
           </Exclude>
         </Configuration>
       </DataCollector>
