@@ -9,13 +9,13 @@ namespace hobio.worker.Consumers;
 
 public class ReportJobConsumer : IConsumer<ReportJob>
 {
+    private readonly IStorageService _storageService;
     private readonly ILogger<ReportJobConsumer> _logger;
-    private readonly IFileService _fileService;
     
-    public ReportJobConsumer(ILogger<ReportJobConsumer> logger, IFileService fileService)
+    public ReportJobConsumer(ILogger<ReportJobConsumer> logger, IStorageService storageService)
     {
         _logger = logger;
-        _fileService = fileService;
+        _storageService = storageService;
     }
 
     public async Task Consume(ConsumeContext<ReportJob> context)
@@ -29,12 +29,10 @@ public class ReportJobConsumer : IConsumer<ReportJob>
         {
             _logger.LogInformation("Generating report for year {Year}", job.Year);
             byte[] pdfBytes = document.GeneratePdf();
+            string fileName = $"report-{job.Year}_{Guid.NewGuid()}.pdf";
             
-            var fileName = $"report-{job.Year}.pdf";
-            var filePath = Path.Combine("/tmp", fileName);
-            await _fileService.WriteAllBytesAsync(filePath, pdfBytes);
-            
-            _logger.LogInformation("Report Generated Successfully at: {FilePath}", filePath);
+            await _storageService.UploadFileAsync(pdfBytes, fileName, "application/pdf");
+            _logger.LogInformation("Report Generated Successfully: {FileName}", fileName);
         }
         catch (Exception e)
         {

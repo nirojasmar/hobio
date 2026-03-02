@@ -13,8 +13,8 @@ public class Program
     {
         QuestPDF.Settings.License = LicenseType.Community;
         var builder = WebApplication.CreateBuilder(args);
-
-        builder.Services.AddTransient<IFileService, FileService>();
+        
+        builder.Services.AddSingleton<IStorageService, GcsService>();
         
         builder.Services.AddMassTransit(config =>
         {
