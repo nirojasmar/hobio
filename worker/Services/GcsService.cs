@@ -33,6 +33,11 @@ public class GcsService : IStorageService
             }
             return _storageClient;
         }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[GcsService] Critical failure in StorageClient.CreateAsync: {ex}");
+            throw;
+        }
         finally
         {
             _semaphore.Release();
