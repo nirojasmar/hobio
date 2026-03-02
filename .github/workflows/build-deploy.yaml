@@ -33,6 +33,8 @@ env:
   VPC_CONNECTOR_PROD: projects/hobio-prod/locations/us-east1/connectors/hobio-prod-vpc-ue1
   SECRET_NAME_DEV: rabbitmq-connection-string-dev
   SECRET_NAME_PROD: rabbitmq-connection-string-prod
+  BUCKET_NAME_DEV: hobio-nonprod-reports-ue1
+  BUCKET_NAME_PROD: hobio-prod-reports-ue1
 
 jobs:
   configure:
@@ -42,6 +44,7 @@ jobs:
       registry_env: ${{ steps.vars.outputs.registry_env }}
       vpc_connector: ${{ steps.vars.outputs.vpc_connector }}
       secret_name: ${{ steps.vars.outputs.secret_name }}
+      bucket_name: ${{ steps.vars.outputs.bucket_name }}
     steps:
       - id: vars
         run: |
@@ -51,10 +54,12 @@ jobs:
             echo "registry_env=prod" >> "$GITHUB_OUTPUT"
             echo "vpc_connector=${{ env.VPC_CONNECTOR_PROD }}" >> "$GITHUB_OUTPUT"
             echo "secret_name=${{ env.SECRET_NAME_PROD }}" >> "$GITHUB_OUTPUT"
+            echo "bucket_name=${{ env.BUCKET_NAME_PROD }}" >> "$GITHUB_OUTPUT"
           else
             echo "registry_env=nonprod" >> "$GITHUB_OUTPUT"
             echo "vpc_connector=${{ env.VPC_CONNECTOR_DEV }}" >> "$GITHUB_OUTPUT"
             echo "secret_name=${{ env.SECRET_NAME_DEV }}" >> "$GITHUB_OUTPUT"
+            echo "bucket_name=${{ env.BUCKET_NAME_DEV }}" >> "$GITHUB_OUTPUT"
           fi
 
   build-api:
@@ -98,5 +103,6 @@ jobs:
       service: hobio-worker-${{ needs.configure.outputs.registry_env }}
       vpc_connector: ${{ needs.configure.outputs.vpc_connector }}
       secrets: ConnectionStrings__RabbitMQ=${{ needs.configure.outputs.secret_name }}:latest
+      env_vars: REPORTS_BUCKET_NAME=${{ needs.configure.outputs.bucket_name }}
       region: ${{ github.event.inputs.region || 'us-east1' }}
     secrets: inherit
