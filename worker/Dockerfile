@@ -20,6 +20,7 @@ RUN dotnet publish "hobio.worker.csproj" -c $BUILD_CONFIGURATION -o /app/publish
 
 FROM base AS final
 WORKDIR /app
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 EXPOSE 8080
 COPY --from=publish /app/publish .
 USER $APP_UID
