@@ -72,7 +72,7 @@ jobs:
     secrets: inherit
 
   deploy-api:
-    if: github.event_name != 'pull_request' || github.event.inputs.environment == 'dev'
+    if: github.event_name != 'pull_request'
     needs: [build-api, configure]
     uses: nirojasmar/base-workflows/.github/workflows/cloud-run-deploy.yml@v1
     with:
@@ -94,7 +94,7 @@ jobs:
     secrets: inherit
 
   deploy-worker:
-    if: github.event_name != 'pull_request' || github.event.inputs.environment == 'dev'
+    if: github.event_name != 'pull_request'
     needs: [build-worker, configure]
     uses: nirojasmar/base-workflows/.github/workflows/cloud-run-deploy.yml@v1
     with:
