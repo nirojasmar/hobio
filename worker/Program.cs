@@ -14,6 +14,12 @@ public class Program
         QuestPDF.Settings.License = LicenseType.Community;
         var builder = WebApplication.CreateBuilder(args);
         
+        // Eagerly fetch Google Cloud Credentials during startup (unthrottled CPU boost phase)
+        Console.WriteLine("[Boot] Fetching Application Default Credentials...");
+        var googleCredential = await Google.Apis.Auth.OAuth2.GoogleCredential.GetApplicationDefaultAsync();
+        builder.Services.AddSingleton(googleCredential);
+        Console.WriteLine("[Boot] Successfully cached Application Default Credentials in DI.");
+        
         builder.Services.AddSingleton<IStorageService, GcsService>();
         
         builder.Services.AddMassTransit(config =>
