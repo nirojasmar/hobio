@@ -72,7 +72,7 @@ jobs:
     secrets: inherit
 
   deploy-api:
-    if: github.event_name != 'pull_request'
+    if: github.event_name != 'pull_request' || github.event.inputs.environment == 'dev'
     needs: [build-api, configure]
     uses: nirojasmar/base-workflows/.github/workflows/cloud-run-deploy.yml@v1
     with:
@@ -94,7 +94,7 @@ jobs:
     secrets: inherit
 
   deploy-worker:
-    if: github.event_name != 'pull_request'
+    if: github.event_name != 'pull_request' || github.event.inputs.environment == 'dev'
     needs: [build-worker, configure]
     uses: nirojasmar/base-workflows/.github/workflows/cloud-run-deploy.yml@v1
     with:
@@ -105,4 +105,5 @@ jobs:
       secrets: ConnectionStrings__RabbitMQ=${{ needs.configure.outputs.secret_name }}:latest
       env_vars: REPORTS_BUCKET_NAME=${{ needs.configure.outputs.bucket_name }}
       region: ${{ github.event.inputs.region || 'us-east1' }}
+      no_cpu_throttling: true
     secrets: inherit
