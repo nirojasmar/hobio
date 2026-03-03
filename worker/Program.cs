@@ -43,17 +43,6 @@ public class Program
 
         var app = builder.Build();
 
-        try
-        {
-            Console.WriteLine("[Boot] Fetching Application Default Credentials...");
-            await Google.Apis.Auth.OAuth2.GoogleCredential.GetApplicationDefaultAsync();
-            Console.WriteLine("[Boot] Successfully cached Application Default Credentials.");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[Boot] Warning: Failed to fetch ADC on startup: {ex.Message}");
-        }
-
         app.MapGet("/health", () => Results.Ok("Healthy"));
 
         await app.RunAsync();
