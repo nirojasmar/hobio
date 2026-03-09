@@ -4,16 +4,20 @@ using hobio.api.Handlers;
 using hobio.shared.Models;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
+using Google.Cloud.Firestore;
 
 public class Program
 {
     public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+        var projectId = builder.Configuration["GOOGLE_CLOUD_PROJECT"] ?? "hobio-nonprod";
         
         // Add services to the container.
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();
+        
+        builder.Services.AddSingleton(FirestoreDb.Create(projectId));
         
         builder.Services.AddMassTransit(config =>
         {
