@@ -17,7 +17,12 @@ public class Program
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();
         
-        builder.Services.AddSingleton(FirestoreDb.Create(projectId));
+        var databaseId = builder.Configuration["FIRESTORE_DATABASE_ID"] ?? "(default)";
+        builder.Services.AddSingleton(new FirestoreDbBuilder 
+        { 
+            ProjectId = projectId, 
+            DatabaseId = databaseId 
+        }.Build());
         
         builder.Services.AddMassTransit(config =>
         {
@@ -46,6 +51,7 @@ public class Program
         
         app.MapGet("/", () => Results.Ok("Healthy"));
         app.MapPost("/api/report", ReportHandler.HandleReportRequest);
+        app.MapGet("/api/report/{jobId}", ReportHandler.GetReportStatus);
         
         await app.RunAsync();
     }

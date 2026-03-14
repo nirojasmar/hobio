@@ -16,10 +16,11 @@ public class ReportHandlerTests
         // Arrange
         var publishEndpoint = Substitute.For<IPublishEndpoint>();
         var logger = Substitute.For<ILogger<hobio.api.Program>>();
+        Google.Cloud.Firestore.FirestoreDb firestoreDb = null!;
         var request = new ReportRequest(2023, new List<string> { "Steam", "LastFm" });
 
         // Act
-        var result = await ReportHandler.HandleReportRequest(request, publishEndpoint, logger);
+        var result = await ReportHandler.HandleReportRequest(request, publishEndpoint, firestoreDb, logger);
 
         // Assert
         await publishEndpoint.Received(1).Publish(Arg.Is<ReportJob>(j => 
