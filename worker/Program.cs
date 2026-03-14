@@ -21,7 +21,12 @@ public class Program
         builder.Services.AddSingleton(googleCredential);
         Console.WriteLine("[Boot] Successfully cached Application Default Credentials in DI.");
         
-        builder.Services.AddSingleton(FirestoreDb.Create(projectId));
+        var databaseId = builder.Configuration["FIRESTORE_DATABASE_ID"] ?? "hobio-dev-job-status";
+        builder.Services.AddSingleton(new FirestoreDbBuilder 
+        { 
+            ProjectId = projectId, 
+            DatabaseId = databaseId 
+        }.Build());
         
         builder.Services.AddSingleton<IStorageService, GcsService>();
         
