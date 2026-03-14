@@ -21,13 +21,13 @@ public class ReportJob
     public List<string> Sources { get; set; } = [];
     
     [FirestoreProperty]
-    public int Year { get; set; } = DateTime.Now.Year;
+    public int Year { get; set; } = DateTime.UtcNow.Year;
 
     [FirestoreProperty]
-    public int Month { get; set; } = DateTime.Now.Month;
+    public int Month { get; set; } = DateTime.UtcNow.Month;
 
     [FirestoreProperty]
-    public int Day { get; set; } = DateTime.Now.Day;
+    public int Day { get; set; } = DateTime.UtcNow.Day;
     
     [FirestoreProperty]
     public string? Title { get; set; }
