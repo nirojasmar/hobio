@@ -6,6 +6,8 @@ namespace hobio.api.Handlers;
 
 public class ReportHandler
 {
+    private const string ReportJobsCollection = "ReportJobs";
+    
     public static async Task<IResult> HandleReportRequest(
         ReportRequest request,
         IPublishEndpoint publishEndpoint,
@@ -27,7 +29,7 @@ public class ReportHandler
         
         if (firestoreDb != null)
         {
-            var docRef = firestoreDb.Collection("ReportJobs").Document(jobId.ToString());
+            var docRef = firestoreDb.Collection(ReportJobsCollection).Document(jobId.ToString());
             await docRef.SetAsync(job);
         }
         
@@ -49,7 +51,7 @@ public class ReportHandler
 
         try
         {
-            var docRef = firestoreDb.Collection("ReportJobs").Document(jobId.ToString());
+            var docRef = firestoreDb.Collection(ReportJobsCollection).Document(jobId.ToString());
             var snapshot = await docRef.GetSnapshotAsync();
         
             if (!snapshot.Exists) 
