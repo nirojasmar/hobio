@@ -51,7 +51,7 @@ public class Program
         
         app.MapGet("/", () => Results.Ok("Healthy"));
         app.MapPost("/api/report", ReportHandler.HandleReportRequest);
-        app.MapGet("/api/report/{jobId}", ReportHandler.GetReportStatus);
+        app.MapGet("/api/report/status/{jobId}", ReportHandler.GetReportStatus);
         
         await app.RunAsync();
     }
