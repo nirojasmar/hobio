@@ -42,15 +42,27 @@ public class ReportHandler
         Guid jobId,
         FirestoreDb firestoreDb)
     {
-        var docRef = firestoreDb.Collection("ReportJobs").Document(jobId.ToString());
-        var snapshot = await docRef.GetSnapshotAsync();
-        
-        if (!snapshot.Exists) 
+        if (firestoreDb == null)
         {
-            return Results.NotFound();
+            return Results.Problem("FirestoreDb is null or not configured", statusCode: 503);
         }
+
+        try
+        {
+            var docRef = firestoreDb.Collection("ReportJobs").Document(jobId.ToString());
+            var snapshot = await docRef.GetSnapshotAsync();
         
-        var job = snapshot.ConvertTo<ReportJob>();
-        return Results.Ok(new ReportStatusResponse(jobId, job.Status, job.StorageUrl, null));
+            if (!snapshot.Exists) 
+            {
+                return Results.NotFound();
+            }
+        
+            var job = snapshot.ConvertTo<ReportJob>();
+            return Results.Ok(new ReportStatusResponse(jobId, job.Status, job.StorageUrl, null));
+        }
+        catch (Exception ex)
+        {
+            return Results.Problem("Failed to get report status", statusCode: 500);
+        }
     }
 }
