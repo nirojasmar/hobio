@@ -27,13 +27,26 @@ public class ReportHandler
             Status = "Pending"
         };
         
+        DocumentReference? docRef = null;
         if (firestoreDb != null)
         {
-            var docRef = firestoreDb.Collection(ReportJobsCollection).Document(jobId.ToString());
+            docRef = firestoreDb.Collection(ReportJobsCollection).Document(jobId.ToString());
             await docRef.SetAsync(job);
         }
-        
-        await publishEndpoint.Publish(job);
+
+        try
+        {
+            await publishEndpoint.Publish(job);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to publish job {JobId}; removing stale Firestore document", jobId);
+            if (docRef != null)
+            {
+                await docRef.DeleteAsync();
+            }
+            throw;
+        }
         
         logger.LogInformation("Queued Job: {JobId}", jobId);
 
