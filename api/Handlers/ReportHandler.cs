@@ -77,6 +77,7 @@ public class ReportHandler
         }
         catch (Exception ex)
         {
+            logger.LogError(ex, "Failed to get report status for job {JobId}", jobId);
             return Results.Problem("Failed to get report status", statusCode: 500);
         }
     }
