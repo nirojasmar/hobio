@@ -55,10 +55,12 @@ public class ReportHandler
 
     public static async Task<IResult> GetReportStatus(
         Guid jobId,
-        FirestoreDb firestoreDb)
+        FirestoreDb firestoreDb,
+        ILogger<Program> logger)
     {
         if (firestoreDb == null)
         {
+            logger.LogError("FirestoreDb is null or not configured");
             return Results.Problem("FirestoreDb is null or not configured", statusCode: 503);
         }
 
