@@ -29,6 +29,8 @@ public class Program
         }.Build());
         
         builder.Services.AddSingleton<IStorageService, GcsService>();
+        builder.Services.AddSingleton<IJobStatusService, JobStatusService>();
+
         
         builder.Services.AddMassTransit(config =>
         {

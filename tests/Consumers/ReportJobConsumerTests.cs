@@ -23,7 +23,8 @@ public class ReportJobConsumerTests
         // Arrange
         var logger = Substitute.For<ILogger<ReportJobConsumer>>();
         var storageService = Substitute.For<IStorageService>();
-        var consumer = new ReportJobConsumer(logger, storageService);
+        var jobStatusService = Substitute.For<IJobStatusService>();
+        var consumer = new ReportJobConsumer(logger, storageService, jobStatusService);
         var context = Substitute.For<ConsumeContext<ReportJob>>();
         
         var job = new ReportJob { JobId = Guid.NewGuid(), UserId = "user-123", Year = 2023, Sources = new List<string> { "Test Source" } };
@@ -33,42 +34,37 @@ public class ReportJobConsumerTests
         await consumer.Consume(context);
 
         // Assert
-        // Verify storage service was called
         await storageService.Received(1).UploadFileAsync(Arg.Any<byte[]>(), Arg.Any<string>(), "application/pdf");
+        await jobStatusService.Received(1).SetProcessingAsync(job.JobId);
+        await jobStatusService.Received(1).SetCompletedAsync(job.JobId, Arg.Any<string>());
+        await jobStatusService.DidNotReceive().SetFailedAsync(Arg.Any<Guid>());
     }
 
     [Fact]
-    public async Task Consume_ShouldLogAndRethrow_WhenExceptionOccurs()
+    public async Task Consume_ShouldSetFailedStatus_WhenExceptionOccurs()
     {
         // Arrange
         var logger = Substitute.For<ILogger<ReportJobConsumer>>();
         var storageService = Substitute.For<IStorageService>();
-        var consumer = new ReportJobConsumer(logger, storageService);
+        var jobStatusService = Substitute.For<IJobStatusService>();
+        var consumer = new ReportJobConsumer(logger, storageService, jobStatusService);
         var context = Substitute.For<ConsumeContext<ReportJob>>();
-        
-        var job = new ReportJob { JobId = Guid.NewGuid(), UserId = "user-failure" };
+
+        var job = new ReportJob { JobId = Guid.NewGuid(), UserId = "user-failure", Year = 2023, Sources = new List<string> { "Test Source" } };
         context.Message.Returns(job);
 
-        // Setup logger to throw on the second call (inside try block)
-        var callCount = 0;
-        logger.When(x => x.Log(
-                LogLevel.Information,
-                Arg.Any<EventId>(),
-                Arg.Any<object>(),
-                Arg.Any<Exception?>(),
-                Arg.Any<Func<object, Exception?, string>>()))
-            .Do(x => 
-            {
-                callCount++;
-                if (callCount == 2)
-                {
-                    throw new InvalidOperationException("Simulated Failure");
-                }
-            });
+        storageService
+            .UploadFileAsync(Arg.Any<byte[]>(), Arg.Any<string>(), Arg.Any<string>())
+            .ThrowsAsync(new InvalidOperationException("Simulated upload failure"));
 
         // Act & Assert
         var ex = await Assert.ThrowsAsync<ApplicationException>(() => consumer.Consume(context));
         Assert.Equal("Failed to generate report", ex.Message);
         Assert.IsType<InvalidOperationException>(ex.InnerException);
+
+        await jobStatusService.Received(1).SetProcessingAsync(job.JobId);
+        await jobStatusService.Received(1).SetFailedAsync(job.JobId);
+        await jobStatusService.DidNotReceive().SetCompletedAsync(Arg.Any<Guid>(), Arg.Any<string>());
     }
 }
+
