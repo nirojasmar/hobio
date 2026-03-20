@@ -13,6 +13,7 @@ RUN dotnet restore "worker/hobio.worker.csproj"
 
 COPY . .
 WORKDIR "/src/worker"
+RUN find /src/worker -name "*.cs" | sort 
 RUN dotnet build "hobio.worker.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
