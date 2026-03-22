@@ -58,7 +58,7 @@ public class ReportJobConsumerTests
             .ThrowsAsync(new InvalidOperationException("Simulated upload failure"));
 
         // Act & Assert
-        var ex = await Assert.ThrowsAsync<ApplicationException>(() => consumer.Consume(context));
+        var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => consumer.Consume(context));
         Assert.Equal("Failed to generate report", ex.Message);
         Assert.IsType<InvalidOperationException>(ex.InnerException);
 
