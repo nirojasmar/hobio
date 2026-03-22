@@ -21,26 +21,26 @@ public class JobStatusService : IJobStatusService
     }
 
     public Task SetProcessingAsync(Guid jobId) =>
-        GetDocRef(jobId).UpdateAsync(new Dictionary<string, object>
+        GetDocRef(jobId).SetAsync(new Dictionary<string, object>
         {
             { "Status", "Processing" },
             { "UpdatedAt", DateTime.UtcNow }
-        });
+        }, SetOptions.MergeAll);
 
     public Task SetCompletedAsync(Guid jobId, string storageUrl) =>
-        GetDocRef(jobId).UpdateAsync(new Dictionary<string, object>
+        GetDocRef(jobId).SetAsync(new Dictionary<string, object>
         {
             { "Status", "Completed" },
             { "StorageUrl", storageUrl },
             { "UpdatedAt", DateTime.UtcNow }
-        });
+        }, SetOptions.MergeAll);
 
     public Task SetFailedAsync(Guid jobId) =>
-        GetDocRef(jobId).UpdateAsync(new Dictionary<string, object>
+        GetDocRef(jobId).SetAsync(new Dictionary<string, object>
         {
             { "Status", "Failed" },
             { "UpdatedAt", DateTime.UtcNow }
-        });
+        }, SetOptions.MergeAll);
 
     private DocumentReference GetDocRef(Guid jobId) =>
         _firestoreDb.Collection(ReportJobsCollection).Document(jobId.ToString());
