@@ -13,6 +13,7 @@ jobs:
       project_key: "hobio"
       scanner_type: "dotnet"
       test_settings_path: "tests/coverlet.runsettings"
+      enable_firestore_emulator: true
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       SONAR_ORG: ${{ secrets.SONAR_ORG }}

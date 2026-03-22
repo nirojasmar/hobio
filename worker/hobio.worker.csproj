@@ -9,6 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Google.Cloud.Firestore" Version="4.2.0" />
         <PackageReference Include="Google.Cloud.Storage.V1" Version="4.14.0" />
         <PackageReference Include="MassTransit" Version="8.5.7" />
         <PackageReference Include="MassTransit.RabbitMQ" Version="8.5.7" />

@@ -12,7 +12,7 @@ COPY ["shared/hobio.shared.csproj", "shared/"]
 RUN dotnet restore "worker/hobio.worker.csproj"
 
 COPY . .
-WORKDIR "/src/worker"
+WORKDIR "/src/worker" 
 RUN dotnet build "hobio.worker.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
