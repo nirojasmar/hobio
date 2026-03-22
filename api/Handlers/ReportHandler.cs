@@ -30,8 +30,16 @@ public class ReportHandler
         DocumentReference? docRef = null;
         if (firestoreDb != null)
         {
-            docRef = firestoreDb.Collection(ReportJobsCollection).Document(jobId.ToString());
-            await docRef.SetAsync(job);
+            try
+            {
+                docRef = firestoreDb.Collection(ReportJobsCollection).Document(jobId.ToString());
+                await docRef.SetAsync(job);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to create document for job {JobId}", jobId);
+                return Results.Problem("Failed to create document for job", statusCode: 500);
+            }
         }
 
         try
@@ -45,7 +53,7 @@ public class ReportHandler
             {
                 await docRef.DeleteAsync();
             }
-            throw;
+            return Results.Problem("Failed to publish job", statusCode: 500);
         }
         
         logger.LogInformation("Queued Job: {JobId}", jobId);

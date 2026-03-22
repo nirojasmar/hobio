@@ -49,7 +49,7 @@ public class ReportJobConsumer : IConsumer<ReportJob>
             await _jobStatusService.SetFailedAsync(job.JobId);
             _logger.LogInformation("Job {JobId} status set to Failed", job.JobId);
 
-            throw new ApplicationException("Failed to generate report", e);
+            throw new InvalidOperationException("Failed to generate report", e);
         }
     }
-}
+}
