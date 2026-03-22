@@ -8,7 +8,7 @@ on:
 
 jobs:
   scan:
-    uses: nirojasmar/base-workflows/.github/workflows/sonar-scan.yml@feature/6-firestore-emulator
+    uses: nirojasmar/base-workflows/.github/workflows/sonar-scan.yml@v1
     with:
       project_key: "hobio"
       scanner_type: "dotnet"
