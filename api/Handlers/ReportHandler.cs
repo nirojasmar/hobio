@@ -1,6 +1,7 @@
 using hobio.shared.Models;
 using MassTransit;
 using Google.Cloud.Firestore;
+using hobio.api.Services;
 
 namespace hobio.api.Handlers;
 
@@ -64,6 +65,7 @@ public class ReportHandler
     public static async Task<IResult> GetReportStatus(
         Guid jobId,
         FirestoreDb firestoreDb,
+        IStorageService storageService,
         ILogger<Program> logger)
     {
         if (firestoreDb == null)
@@ -83,7 +85,22 @@ public class ReportHandler
             }
         
             var job = snapshot.ConvertTo<ReportJob>();
-            return Results.Ok(new ReportStatusResponse(jobId, job.Status, job.StorageUrl, null));
+            
+            string? downloadUrl = job.StorageUrl;
+            if (job.Status == "Completed" && !string.IsNullOrEmpty(job.StorageUrl))
+            {
+                try
+                {
+                    downloadUrl = await storageService.GetSignedDownloadUrlAsync(job.StorageUrl, TimeSpan.FromMinutes(15));
+                }
+                catch (Exception ex)
+                {
+                    logger.LogWarning(ex, "Failed to generate signed URL for job {JobId}", jobId);
+                    // Fall back to returning the raw URL if signing fails.
+                }
+            }
+            
+            return Results.Ok(new ReportStatusResponse(jobId, job.Status, downloadUrl, null));
         }
         catch (Exception ex)
         {

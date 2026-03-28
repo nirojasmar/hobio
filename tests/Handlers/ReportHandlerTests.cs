@@ -57,9 +57,10 @@ public class ReportHandlerTests
     {
         // Arrange
         var logger = Substitute.For<ILogger<hobio.api.Program>>();
+        var storageService = Substitute.For<hobio.api.Services.IStorageService>();
 
         // Act
-        var result = await ReportHandler.GetReportStatus(Guid.NewGuid(), null, logger);
+        var result = await ReportHandler.GetReportStatus(Guid.NewGuid(), null, storageService, logger);
 
         // Assert
         var problem = Assert.IsType<ProblemHttpResult>(result);

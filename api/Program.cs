@@ -5,6 +5,7 @@ using hobio.shared.Models;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Google.Cloud.Firestore;
+using hobio.api.Services;
 
 public class Program
 {
@@ -23,6 +24,13 @@ public class Program
             ProjectId = projectId, 
             DatabaseId = databaseId 
         }.Build());
+        
+        Console.WriteLine("[Boot] Fetching Application Default Credentials...");
+        var googleCredential = await Google.Apis.Auth.OAuth2.GoogleCredential.GetApplicationDefaultAsync();
+        builder.Services.AddSingleton(googleCredential);
+        Console.WriteLine("[Boot] Successfully cached Application Default Credentials in DI.");
+        
+        builder.Services.AddSingleton<IStorageService, StorageService>();
         
         builder.Services.AddMassTransit(config =>
         {
