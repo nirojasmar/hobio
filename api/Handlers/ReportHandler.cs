@@ -89,10 +89,11 @@ public class ReportHandler
             string? downloadUrl = null;
             if (job.Status == "Completed" && !string.IsNullOrEmpty(job.StorageUrl))
             {
+                var objectName = Uri.TryCreate(job.StorageUrl, UriKind.Absolute, out var storageUri)
+                    ? storageUri.AbsolutePath.TrimStart('/')
+                    : job.StorageUrl;
                 try
                 {
-                    var storageUri = new Uri(job.StorageUrl);
-                    var objectName = storageUri.AbsolutePath.TrimStart('/');
                     downloadUrl = await storageService.GetSignedDownloadUrlAsync(objectName, TimeSpan.FromMinutes(15));
                 }
                 catch (Exception ex)
