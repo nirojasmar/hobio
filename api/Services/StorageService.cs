@@ -14,12 +14,12 @@ public class StorageService : IStorageService
         _bucketName = configuration["REPORTS_BUCKET_NAME"] ?? throw new ArgumentNullException("REPORTS_BUCKET_NAME not set");
     }
 
-    public async Task<string> GetSignedDownloadUrlAsync(string fileName, TimeSpan duration)
+    public async Task<string> GetSignedDownloadUrlAsync(string objectName, TimeSpan duration)
     {
         var signer = UrlSigner.FromCredential(_credential);
         return await signer.SignAsync(
             _bucketName,
-            fileName,
+            objectName,
             duration,
             HttpMethod.Get);
     }

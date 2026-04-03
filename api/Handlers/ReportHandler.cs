@@ -86,17 +86,18 @@ public class ReportHandler
         
             var job = snapshot.ConvertTo<ReportJob>();
             
-            string? downloadUrl = job.StorageUrl;
+            string? downloadUrl = null;
             if (job.Status == "Completed" && !string.IsNullOrEmpty(job.StorageUrl))
             {
                 try
                 {
-                    downloadUrl = await storageService.GetSignedDownloadUrlAsync(job.StorageUrl, TimeSpan.FromMinutes(15));
+                    var storageUri = new Uri(job.StorageUrl);
+                    var objectName = storageUri.AbsolutePath.TrimStart('/');
+                    downloadUrl = await storageService.GetSignedDownloadUrlAsync(objectName, TimeSpan.FromMinutes(15));
                 }
                 catch (Exception ex)
                 {
                     logger.LogWarning(ex, "Failed to generate signed URL for job {JobId}", jobId);
-                    // Fall back to returning the raw URL if signing fails.
                 }
             }
             
