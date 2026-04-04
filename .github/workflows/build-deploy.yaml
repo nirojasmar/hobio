@@ -91,7 +91,7 @@ jobs:
       service: hobio-api-${{ needs.configure.outputs.registry_env }}
       vpc_connector: ${{ needs.configure.outputs.vpc_connector }}
       secrets: ConnectionStrings__RabbitMQ=${{ needs.configure.outputs.secret_name }}:latest
-      env_vars: FIRESTORE_DATABASE_ID=${{ needs.configure.outputs.firestore_database_id }},GOOGLE_CLOUD_PROJECT=${{ needs.configure.outputs.google_cloud_project }}
+      env_vars: REPORTS_BUCKET_NAME=${{ needs.configure.outputs.bucket_name }},FIRESTORE_DATABASE_ID=${{ needs.configure.outputs.firestore_database_id }},GOOGLE_CLOUD_PROJECT=${{ needs.configure.outputs.google_cloud_project }}
       region: ${{ github.event.inputs.region || 'us-east1' }}
     secrets: inherit
 

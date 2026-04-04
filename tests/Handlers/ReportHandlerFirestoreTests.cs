@@ -128,13 +128,18 @@ public class ReportHandlerFirestoreTests : IAsyncLifetime
 
         // Act
         var logger = Substitute.For<ILogger<hobio.api.Program>>();
-        var result = await ReportHandler.GetReportStatus(jobId, Db, logger);
+        var storageService = Substitute.For<hobio.api.Services.IStorageService>();
+        // The handler extracts Uri.AbsolutePath ("/report.pdf") then TrimStart('/') → "report.pdf"
+        storageService.GetSignedDownloadUrlAsync("report.pdf", Arg.Any<TimeSpan>())
+            .Returns(Task.FromResult("https://storage.example.com/signed-url.pdf"));
+
+        var result = await ReportHandler.GetReportStatus(jobId, Db, storageService, logger);
 
         // Assert
         var ok = Assert.IsType<Ok<ReportStatusResponse>>(result);
         Assert.Equal(jobId, ok.Value!.JobId);
         Assert.Equal("Completed", ok.Value.Status);
-        Assert.Equal("https://storage.example.com/report.pdf", ok.Value.DownloadUrl);
+        Assert.Equal("https://storage.example.com/signed-url.pdf", ok.Value.DownloadUrl);
 
         // clean up
         await docRef.DeleteAsync();
@@ -151,7 +156,8 @@ public class ReportHandlerFirestoreTests : IAsyncLifetime
 
         // Act
         var logger = Substitute.For<ILogger<hobio.api.Program>>();
-        var result = await ReportHandler.GetReportStatus(missingJobId, Db, logger);
+        var storageService = Substitute.For<hobio.api.Services.IStorageService>();
+        var result = await ReportHandler.GetReportStatus(missingJobId, Db, storageService, logger);
 
         // Assert
         Assert.IsType<NotFound>(result);
