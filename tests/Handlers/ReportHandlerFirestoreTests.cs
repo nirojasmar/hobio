@@ -129,8 +129,8 @@ public class ReportHandlerFirestoreTests : IAsyncLifetime
         // Act
         var logger = Substitute.For<ILogger<hobio.api.Program>>();
         var storageService = Substitute.For<hobio.api.Services.IStorageService>();
-        // The handler parses the StorageUrl and passes only the object name (AbsolutePath minus leading '/') to GetSignedDownloadUrlAsync.
-        storageService.GetSignedDownloadUrlAsync("storage.example.com/report.pdf", Arg.Any<TimeSpan>())
+        // The handler extracts Uri.AbsolutePath ("/report.pdf") then TrimStart('/') → "report.pdf"
+        storageService.GetSignedDownloadUrlAsync("report.pdf", Arg.Any<TimeSpan>())
             .Returns(Task.FromResult("https://storage.example.com/signed-url.pdf"));
 
         var result = await ReportHandler.GetReportStatus(jobId, Db, storageService, logger);
