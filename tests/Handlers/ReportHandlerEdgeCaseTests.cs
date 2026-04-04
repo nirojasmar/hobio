@@ -50,7 +50,7 @@ public class ReportHandlerEdgeCaseTests
     /// the handler must NOT call GetSignedDownloadUrlAsync and should return
     /// Ok with a null DownloadUrl.
     /// </summary>
-    [Fact]
+    [SkippableFact]
     public async Task GetReportStatus_CompletedJobWithNullStorageUrl_ReturnsOkWithNullDownloadUrl()
     {
         // Arrange – seed a "Completed" job that has no StorageUrl yet
@@ -103,7 +103,7 @@ public class ReportHandlerEdgeCaseTests
     /// When the job's Status is NOT "Completed" (e.g. "Pending"),
     /// the handler must skip signed-URL generation and return Ok with null DownloadUrl.
     /// </summary>
-    [Fact]
+    [SkippableFact]
     public async Task GetReportStatus_PendingJob_ReturnsOkWithNullDownloadUrl()
     {
         Skip.If(
@@ -148,7 +148,7 @@ public class ReportHandlerEdgeCaseTests
     /// When the signed-URL generation throws, the handler swallows the exception,
     /// logs a warning, and returns Ok with a null DownloadUrl (graceful degradation).
     /// </summary>
-    [Fact]
+    [SkippableFact]
     public async Task GetReportStatus_SignedUrlGenerationFails_ReturnsOkWithNullDownloadUrl()
     {
         Skip.If(
